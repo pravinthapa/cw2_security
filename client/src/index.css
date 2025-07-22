@@ -1,0 +1,264 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LifeLockr Design System - Security-focused with professional aesthetics */
+
+@layer base {
+  :root {
+    /* Core Security Colors */
+    --background: 220 25% 99%;
+    --foreground: 220 30% 15%;
+
+    /* Card & Surface Colors */
+    --card: 220 20% 98%;
+    --card-foreground: 220 25% 20%;
+
+    --popover: 220 20% 98%;
+    --popover-foreground: 220 25% 20%;
+
+    /* Primary - Deep Security Blue */
+    --primary: 220 60% 25%;
+    --primary-foreground: 220 20% 98%;
+    --primary-hover: 220 65% 30%;
+    --primary-light: 220 45% 85%;
+
+    /* Secondary - Professional Gray */
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 25% 25%;
+    --secondary-hover: 220 15% 88%;
+
+    /* Accent - Security Teal */
+    --accent: 180 50% 45%;
+    --accent-foreground: 220 20% 98%;
+    --accent-hover: 180 55% 50%;
+    --accent-light: 180 35% 90%;
+
+    /* Status Colors */
+    --success: 145 60% 45%;
+    --success-foreground: 220 20% 98%;
+    --success-light: 145 35% 90%;
+
+    --warning: 35 85% 55%;
+    --warning-foreground: 220 20% 98%;
+    --warning-light: 35 65% 90%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 220 20% 98%;
+    --destructive-light: 0 55% 90%;
+
+    /* Neutral Shades */
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 15% 55%;
+
+    --border: 220 20% 88%;
+    --input: 220 20% 95%;
+    --ring: 220 60% 25%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-hover)));
+    --gradient-hero: linear-gradient(135deg, hsl(220 60% 25%), hsl(180 50% 45%));
+    --gradient-surface: linear-gradient(180deg, hsl(var(--background)), hsl(var(--card)));
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px hsl(220 25% 15% / 0.08);
+    --shadow-medium: 0 4px 16px hsl(220 25% 15% / 0.12);
+    --shadow-strong: 0 8px 24px hsl(220 25% 15% / 0.16);
+    --shadow-glow: 0 0 24px hsl(var(--accent) / 0.3);
+
+    /* Layout */
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Security-focused button variants */
+  .btn-security {
+    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground;
+    @apply hover:shadow-lg active:scale-95 transition-all duration-200;
+  }
+
+  .btn-accent {
+    @apply bg-gradient-to-r from-accent to-accent-hover text-accent-foreground;
+    @apply hover:shadow-lg active:scale-95 transition-all duration-200;
+  }
+
+  /* Form enhancements */
+  .form-input {
+    @apply bg-input border-border focus:border-accent focus:ring-2 focus:ring-accent/20;
+    @apply transition-all duration-200 rounded-2xl px-4 py-3;
+  }
+
+  /* Card variants */
+  .card-security {
+    @apply bg-card border border-border rounded-2xl p-6;
+    @apply shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-shadow duration-300;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-card to-background border border-border rounded-2xl p-6;
+    @apply shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-strong)] transition-shadow duration-300;
+  }
+
+  /* Status indicators */
+  .status-success {
+    @apply bg-success-light text-success border border-success/20 rounded-xl px-3 py-1;
+  }
+
+  .status-warning {
+    @apply bg-warning-light text-warning border border-warning/20 rounded-xl px-3 py-1;
+  }
+
+  .status-error {
+    @apply bg-destructive-light text-destructive border border-destructive/20 rounded-xl px-3 py-1;
+  }
+
+  /* Navigation enhancements */
+  .nav-link {
+    @apply relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200;
+    @apply text-muted-foreground hover:text-foreground hover:bg-secondary;
+  }
+
+  .nav-link.active {
+    @apply bg-primary text-primary-foreground;
+    @apply shadow-[var(--shadow-soft)];
+  }
+
+  .nav-link.active::before {
+    @apply content-[''] absolute left-0 top-0 bottom-0 w-1 bg-accent rounded-r;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
