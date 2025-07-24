@@ -1,12 +1,12 @@
-import React, { useState, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Shield, Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import axios from 'axios';
+import React, { useState, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Shield, Eye, EyeOff, Mail, Lock, AlertCircle } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useAuth } from "../contexts/AuthContext";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import axios from "axios";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -24,10 +24,10 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!captchaToken) {
-      setError('Please complete the captcha verification');
+      setError("Please complete the captcha verification");
       return;
     }
 
@@ -47,10 +47,10 @@ const Login: React.FC = () => {
       } else {
         // Successful login without MFA
         navigate("/dashboard");
-        localStorage.setItem("user", JSON.stringify(data));
+        localStorage.setItem("user", data);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || "Invalid email or password");
       // Reset captcha on error
       if (recaptchaRef.current) {
         recaptchaRef.current.reset();

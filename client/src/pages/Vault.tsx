@@ -23,14 +23,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import api from "@/services/api";
+import axios from "axios";
 
 const Vault: React.FC = () => {
-  const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
+  const [vaultItems, setVaultItems] = useState<string[]>([]);
   const [filteredItems, setFilteredItems] = useState<VaultItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [isLoading, setIsLoading] = useState(true);
-  const parsedData = filteredItems?.data ? JSON.parse(filteredItems?.data) : [];
+  const parsedData = filteredItems?.data ? filteredItems?.data : [];
   const navigate = useNavigate();
 
   const itemTypes = [
@@ -38,15 +40,15 @@ const Vault: React.FC = () => {
     { value: "LOGIN", label: "Logins", icon: Shield },
     { value: "CREDIT_CARD", label: "Cards", icon: CreditCard },
     { value: "SECURE_NOTE", label: "Notes", icon: Eye },
-    { value: "IDENTITY", label: "Identities", icon: User },
+    { value: "IDENTITY", label: "Iitemsdentities", icon: User },
     { value: "DOCUMENT", label: "Documents", icon: FileText },
   ];
 
   const getItemById = async () => {
     try {
-      const response = await vaultService.getVaultItem("id")
+      const response = await vaultService.getVaultItem("id");
     } catch (error) {
-      console.log("error occured mother fucker")
+      console.log("error occured mother fucker");
     }
   };
   useEffect(() => {
@@ -59,8 +61,8 @@ const Vault: React.FC = () => {
 
   const loadVaultItems = async () => {
     try {
-      const items = await vaultService.getVaultItems();
-      setVaultItems(JSON.parse(items));
+      const items = await api.get("/api/vault");
+      if (items) setVaultItems(items);
     } catch (error) {
       console.error("Failed to load vault items:", error);
     } finally {
@@ -161,7 +163,18 @@ const Vault: React.FC = () => {
       </div>
     );
   }
-
+  const dummyData = [
+    {
+      id: 1,
+      title: "peace",
+      type: "",
+      favorite: "",
+      username: "",
+      updatedAt: "",
+      email: "",
+      url: "",
+    },
+  ];
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -210,7 +223,7 @@ const Vault: React.FC = () => {
       </div>
 
       {/* Items Grid */}
-      {filteredItems.length === 0 ? (
+      {dummyData.length === 0 ? (
         <Card className="card-security">
           <CardContent className="p-12 text-center">
             <Shield className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -231,7 +244,7 @@ const Vault: React.FC = () => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item) => (
+          {dummyData.map((item) => (
             <Card
               key={item.id}
               className="card-security hover:shadow-medium transition-all duration-200 cursor-pointer group"

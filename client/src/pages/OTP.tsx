@@ -48,7 +48,7 @@ const Login: React.FC = () => {
       } else {
         // Successful login without MFA
         navigate(from, { replace: true });
-        localStorage.setItem("user", data);
+        localStorage.setItem("user", JSON.stringify(data));
       }
     } catch (err: any) {
       if (err.response?.data?.message) {

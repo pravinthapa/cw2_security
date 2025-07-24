@@ -39,7 +39,6 @@ export const getVaultItems = async (req, res, next) => {
       decrypted.push({
         id: item._id,
         label: item.label,
-        data: item.encryptedData,
         type: item.type,
         notes: item.notes,
         tags: item.tags,
@@ -80,13 +79,12 @@ export const getVaultItemById = async (req, res, next) => {
 /** PUT /api/vault/:id */
 export const updateVaultItem = async (req, res, next) => {
   try {
-    const { label, data } = req.body;
-    const encryptedData = encrypt(JSON.stringify(data));
+    const { label, type, notes, tags } = req.body;
+    console.log("Request body:", req.body);
 
     const item = await VaultItem.findOneAndUpdate(
       { _id: req.params.id, owner: req.user.userId },
-      { label, type: data.type, notes: data.notes, tags: data.tags },
-
+      req.body,
       { new: true }
     );
 
@@ -98,7 +96,7 @@ export const updateVaultItem = async (req, res, next) => {
       label: item.label,
     });
 
-    res.status(200).json({ message: "Vault item updated successfully" });
+    res.json(item);
   } catch (err) {
     next(err);
   }
