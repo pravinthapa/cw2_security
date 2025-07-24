@@ -1,9 +1,9 @@
-import api from './api';
+import api from "./api";
 
 export interface VaultItem {
   id: string;
   title: string;
-  type: 'LOGIN' | 'SECURE_NOTE' | 'CREDIT_CARD' | 'IDENTITY' | 'DOCUMENT';
+  type: "LOGIN" | "SECURE_NOTE" | "CREDIT_CARD" | "IDENTITY" | "DOCUMENT";
   category: string;
   username?: string;
   email?: string;
@@ -13,25 +13,23 @@ export interface VaultItem {
   updatedAt: string;
   favorite: boolean;
   tags: string[];
-  fields?: { label: string; value: string; type: 'text' | 'password' | 'email' | 'url' }[];
+  fields?: {
+    label: string;
+    value: string;
+    type: "text" | "password" | "email" | "url";
+  }[];
 }
 
 export interface CreateVaultItemData {
-  title: string;
-  type: VaultItem['type'];
-  category: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  url?: string;
+  label: string;
+  type: VaultItem["type"];
   notes?: string;
-  fields?: VaultItem['fields'];
-  tags?: string[];
+  tags?: string;
 }
 
 class VaultService {
   async getVaultItems(): Promise<VaultItem[]> {
-    const response = await api.get('/api/vault');
+    const response = await api.get("/api/vault");
     return response.data;
   }
 
@@ -41,11 +39,14 @@ class VaultService {
   }
 
   async createVaultItem(data: CreateVaultItemData): Promise<VaultItem> {
-    const response = await api.post('/api/vault', data);
+    const response = await api.post("/api/vault", data);
     return response.data;
   }
 
-  async updateVaultItem(id: string, data: Partial<CreateVaultItemData>): Promise<VaultItem> {
+  async updateVaultItem(
+    id: string,
+    data: Partial<CreateVaultItemData>
+  ): Promise<VaultItem> {
     const response = await api.put(`/api/vault/${id}`, data);
     return response.data;
   }
@@ -60,16 +61,22 @@ class VaultService {
   }
 
   async searchVaultItems(query: string): Promise<VaultItem[]> {
-    const response = await api.get(`/api/vault/search?q=${encodeURIComponent(query)}`);
+    const response = await api.get(
+      `/api/vault/search?q=${encodeURIComponent(query)}`
+    );
     return response.data;
   }
 
   async getVaultAnalytics(): Promise<{
     totalItems: number;
     itemsByType: Record<string, number>;
-    recentActivity: Array<{ action: string; itemTitle: string; timestamp: string }>;
+    recentActivity: Array<{
+      action: string;
+      itemTitle: string;
+      timestamp: string;
+    }>;
   }> {
-    const response = await api.get('/api/vault/analytics');
+    const response = await api.get("/api/vault/analytics");
     return response.data;
   }
 }

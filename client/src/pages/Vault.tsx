@@ -27,7 +27,7 @@ import api from "@/services/api";
 import axios from "axios";
 
 const Vault: React.FC = () => {
-  const [vaultItems, setVaultItems] = useState<string[]>([]);
+  const [vaultItems, setVaultItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState<VaultItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("ALL");
@@ -44,13 +44,6 @@ const Vault: React.FC = () => {
     { value: "DOCUMENT", label: "Documents", icon: FileText },
   ];
 
-  const getItemById = async () => {
-    try {
-      const response = await vaultService.getVaultItem("id");
-    } catch (error) {
-      console.log("error occured mother fucker");
-    }
-  };
   useEffect(() => {
     loadVaultItems();
   }, []);
@@ -62,7 +55,7 @@ const Vault: React.FC = () => {
   const loadVaultItems = async () => {
     try {
       const items = await api.get("/api/vault");
-      if (items) setVaultItems(items);
+      if (items) setVaultItems(items?.data);
     } catch (error) {
       console.error("Failed to load vault items:", error);
     } finally {
@@ -74,7 +67,7 @@ const Vault: React.FC = () => {
 
     // Filter by search query
     if (searchQuery) {
-      filtered = filtered.filter(
+      filtered = filtered?.filter(
         (item) =>
           item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -163,18 +156,7 @@ const Vault: React.FC = () => {
       </div>
     );
   }
-  const dummyData = [
-    {
-      id: 1,
-      title: "peace",
-      type: "",
-      favorite: "",
-      username: "",
-      updatedAt: "",
-      email: "",
-      url: "",
-    },
-  ];
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -223,7 +205,7 @@ const Vault: React.FC = () => {
       </div>
 
       {/* Items Grid */}
-      {dummyData.length === 0 ? (
+      {filteredItems?.length === 0 ? (
         <Card className="card-security">
           <CardContent className="p-12 text-center">
             <Shield className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -244,19 +226,19 @@ const Vault: React.FC = () => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dummyData.map((item) => (
+          {filteredItems?.map((item) => (
             <Card
-              key={item.id}
+              key={item?.id}
               className="card-security hover:shadow-medium transition-all duration-200 cursor-pointer group"
             >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`p-2 rounded-xl ${getTypeColor(item.type)}`}>
-                    {getTypeIcon(item.type)}
+                  <div className={`p-2 rounded-xl ${getTypeColor(item?.type)}`}>
+                    {getTypeIcon(item?.type)}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {item.favorite && (
+                    {item?.favorite && (
                       <Star className="h-4 w-4 text-warning fill-current" />
                     )}
 
@@ -272,24 +254,24 @@ const Vault: React.FC = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onClick={() => navigate(`/vault/${item.id}`)}
+                          onClick={() => navigate(`/vault/${item?.id}`)}
                         >
                           View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => navigate(`/vault/${item.id}/edit`)}
+                          onClick={() => navigate(`/vault/${item?.id}/edit`)}
                         >
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleToggleFavorite(item.id)}
+                          onClick={() => handleToggleFavorite(item?.id)}
                         >
-                          {item.favorite
+                          {item?.favorite
                             ? "Remove from Favorites"
                             : "Add to Favorites"}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDeleteItem(item.id)}
+                          onClick={() => handleDeleteItem(item?.id)}
                           className="text-destructive"
                         >
                           Delete
@@ -299,36 +281,37 @@ const Vault: React.FC = () => {
                   </div>
                 </div>
 
-                <Link to={`/vault/${item.id}`} className="block">
+                <Link to={`/vault/${item?.id}`} className="block">
                   <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {item.title}
+                    {item?.title}
                   </h3>
 
                   <div className="space-y-1 text-sm text-muted-foreground">
-                    {item.username && (
+                    {item?.username && (
                       <p className="truncate">
                         <span className="font-medium">Username:</span>{" "}
-                        {item.username}
+                        {item?.username}
                       </p>
                     )}
-                    {item.email && (
+                    {item?.email && (
                       <p className="truncate">
-                        <span className="font-medium">Email:</span> {item.email}
+                        <span className="font-medium">Email:</span>{" "}
+                        {item?.email}
                       </p>
                     )}
-                    {item.url && (
+                    {item?.url && (
                       <p className="truncate">
-                        <span className="font-medium">URL:</span> {item.url}
+                        <span className="font-medium">URL:</span> {item?.url}
                       </p>
                     )}
                   </div>
 
                   <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                     <span className="text-xs px-2 py-1 bg-muted rounded-lg">
-                      {item.type.replace("_", " ").toLowerCase()}
+                      {item?.type.replace("_", " ").toLowerCase()}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(item.updatedAt).toLocaleDateString()}
+                      {new Date(item?.updatedAt).toLocaleDateString()}
                     </span>
                   </div>
                 </Link>
