@@ -41,7 +41,7 @@ app.use("/api/access", accessRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/logs", logRoutes);
-app.use("/api/contact", contactRoutes);
+app.use("/api/contacts", contactRoutes);
 app.use(mongoSanitize());
 app.use("/api/admin/logs", adminLogRoutes);
 
