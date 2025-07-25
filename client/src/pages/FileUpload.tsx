@@ -1,9 +1,22 @@
-import React, { useState, useCallback } from 'react';
-import { Upload, File, X, Check, AlertCircle, Download, Shield } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Progress } from '../components/ui/progress';
-import api from '../services/api';
+import React, { useState, useCallback } from "react";
+import {
+  Upload,
+  File,
+  X,
+  Check,
+  AlertCircle,
+  Download,
+  Shield,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Progress } from "../components/ui/progress";
+import api from "../services/api";
 
 interface UploadedFile {
   id: string;
@@ -18,13 +31,15 @@ interface UploadedFile {
 interface FileUploadProgress {
   file: File;
   progress: number;
-  status: 'uploading' | 'success' | 'error';
+  status: "uploading" | "success" | "error";
   error?: string;
 }
 
 const FileUpload: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [currentUploads, setCurrentUploads] = useState<FileUploadProgress[]>([]);
+  const [currentUploads, setCurrentUploads] = useState<FileUploadProgress[]>(
+    []
+  );
   const [isDragOver, setIsDragOver] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,10 +49,10 @@ const FileUpload: React.FC = () => {
 
   const loadUploadedFiles = async () => {
     try {
-      const response = await api.get('/files');
+      const response = await api.get("/api/upload");
       setUploadedFiles(response.data);
     } catch (error) {
-      console.error('Failed to load files:', error);
+      console.error("Failed to load files:", error);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +71,7 @@ const FileUpload: React.FC = () => {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     handleFileUpload(files);
   }, []);
@@ -67,63 +82,60 @@ const FileUpload: React.FC = () => {
   };
 
   const handleFileUpload = async (files: File[]) => {
-    const newUploads: FileUploadProgress[] = files.map(file => ({
+    const newUploads: FileUploadProgress[] = files.map((file) => ({
       file,
       progress: 0,
-      status: 'uploading' as const,
+      status: "uploading" as const,
     }));
 
-    setCurrentUploads(prev => [...prev, ...newUploads]);
+    setCurrentUploads((prev) => [...prev, ...newUploads]);
 
     for (const upload of newUploads) {
       try {
         const formData = new FormData();
-        formData.append('file', upload.file);
+        formData.append("file", upload.file);
 
-        const response = await api.post('/files/upload', formData, {
+        const response = await api.post("/api/upload", formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           onUploadProgress: (progressEvent) => {
             const progress = Math.round(
               (progressEvent.loaded * 100) / (progressEvent.total || 1)
             );
-            
-            setCurrentUploads(prev =>
-              prev.map(u =>
-                u.file === upload.file
-                  ? { ...u, progress }
-                  : u
-              )
+
+            setCurrentUploads((prev) =>
+              prev.map((u) => (u.file === upload.file ? { ...u, progress } : u))
             );
           },
         });
 
         // Mark as successful
-        setCurrentUploads(prev =>
-          prev.map(u =>
+        setCurrentUploads((prev) =>
+          prev.map((u) =>
             u.file === upload.file
-              ? { ...u, status: 'success' as const, progress: 100 }
+              ? { ...u, status: "success" as const, progress: 100 }
               : u
           )
         );
 
         // Add to uploaded files list
-        setUploadedFiles(prev => [response.data, ...prev]);
+        setUploadedFiles((prev) => [response.data, ...prev]);
 
         // Remove from current uploads after delay
         setTimeout(() => {
-          setCurrentUploads(prev => prev.filter(u => u.file !== upload.file));
+          setCurrentUploads((prev) =>
+            prev.filter((u) => u.file !== upload.file)
+          );
         }, 2000);
-
       } catch (error: any) {
-        setCurrentUploads(prev =>
-          prev.map(u =>
+        setCurrentUploads((prev) =>
+          prev.map((u) =>
             u.file === upload.file
-              ? { 
-                  ...u, 
-                  status: 'error' as const, 
-                  error: error.response?.data?.message || 'Upload failed'
+              ? {
+                  ...u,
+                  status: "error" as const,
+                  error: error.response?.data?.message || "Upload failed",
                 }
               : u
           )
@@ -133,34 +145,34 @@ const FileUpload: React.FC = () => {
   };
 
   const handleDeleteFile = async (fileId: string) => {
-    if (!confirm('Are you sure you want to delete this file?')) {
+    if (!confirm("Are you sure you want to delete this file?")) {
       return;
     }
 
     try {
       await api.delete(`/files/${fileId}`);
-      setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
+      setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
     } catch (error) {
-      console.error('Failed to delete file:', error);
+      console.error("Failed to delete file:", error);
     }
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return '🖼️';
-    if (type.startsWith('video/')) return '🎥';
-    if (type.startsWith('audio/')) return '🎵';
-    if (type.includes('pdf')) return '📄';
-    if (type.includes('document') || type.includes('word')) return '📝';
-    if (type.includes('spreadsheet') || type.includes('excel')) return '📊';
-    return '📁';
+    if (type.startsWith("image/")) return "🖼️";
+    if (type.startsWith("video/")) return "🎥";
+    if (type.startsWith("audio/")) return "🎵";
+    if (type.includes("pdf")) return "📄";
+    if (type.includes("document") || type.includes("word")) return "📝";
+    if (type.includes("spreadsheet") || type.includes("excel")) return "📊";
+    return "📁";
   };
 
   if (isLoading) {
@@ -200,10 +212,12 @@ const FileUpload: React.FC = () => {
               <Shield className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="font-semibold text-accent mb-2">End-to-End Encryption</h3>
+              <h3 className="font-semibold text-accent mb-2">
+                End-to-End Encryption
+              </h3>
               <p className="text-sm text-muted-foreground">
-                All files are encrypted before upload and can only be decrypted by you. 
-                We cannot access your files even if we wanted to.
+                All files are encrypted before upload and can only be decrypted
+                by you. We cannot access your files even if we wanted to.
               </p>
             </div>
           </div>
@@ -216,8 +230,8 @@ const FileUpload: React.FC = () => {
           <div
             className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors ${
               isDragOver
-                ? 'border-accent bg-accent-light/20'
-                : 'border-muted-foreground/25 hover:border-accent/50'
+                ? "border-accent bg-accent-light/20"
+                : "border-muted-foreground/25 hover:border-accent/50"
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -225,10 +239,10 @@ const FileUpload: React.FC = () => {
           >
             <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Upload Files</h3>
-            <p className="text-muted-foreground mb-6">
+            {/* <p className="text-muted-foreground mb-6">
               Drag and drop files here, or click to browse
-            </p>
-            
+            </p> */}
+
             <input
               type="file"
               multiple
@@ -236,12 +250,13 @@ const FileUpload: React.FC = () => {
               className="hidden"
               id="file-input"
             />
-            <label htmlFor="file-input">
-              <Button className="btn-security cursor-pointer">
-                Select Files
-              </Button>
+            <label
+              htmlFor="file-input"
+              className="bg-blue-900 text-white p-2  rounded-sm hover:bg-opacity-80 duration-100"
+            >
+              Select Files
             </label>
-            
+
             <p className="text-xs text-muted-foreground mt-4">
               Maximum file size: 10MB. Supported formats: All file types
             </p>
@@ -260,33 +275,39 @@ const FileUpload: React.FC = () => {
               <div key={index} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="text-2xl">{getFileIcon(upload.file.type)}</div>
+                    <div className="text-2xl">
+                      {getFileIcon(upload.file.type)}
+                    </div>
                     <div>
-                      <p className="font-medium truncate max-w-sm">{upload.file.name}</p>
+                      <p className="font-medium truncate max-w-sm">
+                        {upload.file.name}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {formatFileSize(upload.file.size)}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
-                    {upload.status === 'uploading' && (
-                      <span className="text-sm text-muted-foreground">{upload.progress}%</span>
+                    {upload.status === "uploading" && (
+                      <span className="text-sm text-muted-foreground">
+                        {upload.progress}%
+                      </span>
                     )}
-                    {upload.status === 'success' && (
+                    {upload.status === "success" && (
                       <Check className="h-5 w-5 text-success" />
                     )}
-                    {upload.status === 'error' && (
+                    {upload.status === "error" && (
                       <AlertCircle className="h-5 w-5 text-destructive" />
                     )}
                   </div>
                 </div>
-                
-                {upload.status === 'uploading' && (
+
+                {upload.status === "uploading" && (
                   <Progress value={upload.progress} className="h-2" />
                 )}
-                
-                {upload.status === 'error' && upload.error && (
+
+                {upload.status === "error" && upload.error && (
                   <p className="text-sm text-destructive">{upload.error}</p>
                 )}
               </div>
@@ -320,7 +341,9 @@ const FileUpload: React.FC = () => {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>{formatFileSize(file.size)}</span>
                         <span>•</span>
-                        <span>{new Date(file.uploadedAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(file.uploadedAt).toLocaleDateString()}
+                        </span>
                         {file.encrypted && (
                           <>
                             <span>•</span>
@@ -333,12 +356,12 @@ const FileUpload: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(file.url, '_blank')}
+                      onClick={() => window.open(file.url, "_blank")}
                     >
                       <Download className="h-4 w-4" />
                     </Button>

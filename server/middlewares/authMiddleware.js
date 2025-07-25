@@ -2,18 +2,32 @@ import jwt from "jsonwebtoken";
 
 export const protect = (requiredRoles = []) => (req, res, next) => {
   const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+  
+  // Validate Bearer token format
+  if (!authHeader.startsWith("Bearer ")) {
+    console.warn("Invalid or missing Authorization header:", authHeader);
+    return res.status(401).json({ message: "Not authenticated" });
+  }
 
-  if (!token) return res.status(401).json({ message: "Not authenticated" });
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (requiredRoles.length && !requiredRoles.includes(decoded.role))
-      return res.status(403).json({ message: "Access denied" });
+    // Add small clock tolerance to avoid time sync issues
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      clockTolerance: 5, // seconds
+    });
 
-    req.user = decoded; // { userId, role, iat, exp }
+    // Role-based access check
+    if (requiredRoles.length && !requiredRoles.includes(decoded.role)) {
+      console.warn("Access denied for role:", decoded.role);
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    // Attach decoded user info to request
+    req.user = decoded; // e.g., { userId, role, iat, exp }
     return next();
-  } catch {
-    return res.status(401).json({ message: "Invalid/expired token" });
+  } catch (err) {
+    console.error("JWT verification error:", err.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
