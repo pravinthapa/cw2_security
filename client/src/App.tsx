@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -27,7 +26,7 @@ import ActivityLogs from "./pages/ActivityLogs";
 import AdminAudit from "./pages/AdminAudit";
 import NotFound from "./pages/NotFound";
 import VaultItemCreate from "./pages/VaultItemCreate";
-import { Toaster } from './components/ui/toaster';
+import { Toaster } from "./components/ui/toaster";
 
 const queryClient = new QueryClient();
 
@@ -46,70 +45,97 @@ const App = () => (
 
             {/* Protected routes */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/vault" element={
-              <ProtectedRoute>
-                <Layout>
-                  <Vault />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/vault/new" element={
-              <ProtectedRoute>
-                <Layout>
-                  <VaultItemCreate />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/vault/:id" element={
-              <ProtectedRoute>
-                <Layout>
-                  <VaultItemDetail />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/emergency-contacts" element={
-              <ProtectedRoute>
-                <Layout>
-                  <EmergencyContacts />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/upload" element={
-              <ProtectedRoute>
-                <Layout>
-                  <FileUpload />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/billing" element={
-              <ProtectedRoute>
-                <Layout>
-                  <StripePayment />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/logs" element={
-              <ProtectedRoute>
-                <Layout>
-                  <ActivityLogs />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/audit" element={
-              <ProtectedRoute roles={['ADMIN']}>
-                <Layout>
-                  <AdminAudit />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/vault"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Vault />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/vault/new"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <VaultItemCreate />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/vault/:id"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <VaultItemDetail />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <EmergencyContacts />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <FileUpload />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/billing"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <StripePayment />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/logs"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ActivityLogs />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/audit"
+              element={
+                <ProtectedRoute roles={["ADMIN"]}>
+                  <Layout>
+                    <AdminAudit />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/dashboard"
               element={

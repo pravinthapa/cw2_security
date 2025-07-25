@@ -9,6 +9,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import logRoutes from "./routes/logRoutes.js";
 import mongoSanitize from "express-mongo-sanitize";
 import adminLogRoutes from "./routes/adminLogRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 // import { errorHandler } from "./middlewares/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -40,6 +41,7 @@ app.use("/api/access", accessRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/logs", logRoutes);
+app.use("/api/contact", contactRoutes);
 app.use(mongoSanitize());
 app.use("/api/admin/logs", adminLogRoutes);
 

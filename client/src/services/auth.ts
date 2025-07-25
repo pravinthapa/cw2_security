@@ -78,7 +78,7 @@ class AuthService {
 
   getCurrentUser(): User | null {
     const userData = JSON.parse(localStorage.getItem("user"));
-    return userData ? JSON.parse(userData?.user) : null;
+    return userData?.user;
   }
 
   getToken(): string | null {
