@@ -28,7 +28,7 @@ import NotFound from "./pages/NotFound";
 import VaultItemCreate from "./pages/VaultItemCreate";
 import { Toaster } from "./components/ui/toaster";
 import Settings from "./pages/Settings";
-import PremiumFeatures from "./pages/PremiumFeatures";
+import PremiumFeatures from "./components/PremiumForm";
 
 const queryClient = new QueryClient();
 
@@ -229,16 +229,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/premium"
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <PremiumFeatures />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
+           
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
