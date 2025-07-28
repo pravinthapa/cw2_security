@@ -54,7 +54,7 @@ const EmergencyContacts: React.FC = () => {
 
   const loadContacts = async () => {
     try {
-      const response = await api.get("/api/contact");
+      const response = await api.get("/api/contacts");
       setContacts(response.data);
     } catch (error) {
       console.error("Failed to load emergency contacts:", error);
@@ -75,7 +75,7 @@ const EmergencyContacts: React.FC = () => {
         relationship: data?.relationship,
         accessLevel: data?.relationship,
       };
-      const response = await api.post("/api/contact", formData);
+      const response = await api.post("/api/contacts", formData);
       setContacts([...contacts, response.data]);
       form.reset({
         firstName: "",
@@ -99,7 +99,7 @@ const EmergencyContacts: React.FC = () => {
     }
 
     try {
-      await api.delete(`/api/contact/${contactId}`);
+      await api.delete(`/api/contacts/${contactId}`);
       setContacts(contacts.filter((c) => c.id !== contactId));
     } catch (error) {
       console.error("Failed to remove contact:", error);

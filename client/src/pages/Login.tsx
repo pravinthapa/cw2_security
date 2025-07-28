@@ -35,7 +35,7 @@ const Login: React.FC = () => {
 
     try {
       const { data } = await axios.post(
-        import.meta.env.VITE_BACKEND_BASE_URL + "/api/auth/login",
+        import.meta.env.VITE_BACKEND_BASE_URL + "/auth/login",
         formData,
         {
           headers: { "Content-Type": "application/json" },
@@ -72,7 +72,7 @@ const Login: React.FC = () => {
 
     try {
       const { data } = await axios.post(
-        "/api/auth/verify-mfa",
+        "/auth/verify-mfa",
         {
           email: formData.email,
           code: mfaCode,

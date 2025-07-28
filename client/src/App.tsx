@@ -19,7 +19,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Vault from "./pages/Vault";
 import VaultItemDetail from "./pages/VaultItemDetail";
-import EmergencyContacts from "./pages/EmergencyContacts";
+// import EmergencyContacts from "./pages/EmergencyContacts";
 import FileUpload from "./pages/FileUpload";
 import StripePayment from "./pages/StripePayment";
 import ActivityLogs from "./pages/ActivityLogs";
@@ -27,6 +27,7 @@ import AdminAudit from "./pages/AdminAudit";
 import NotFound from "./pages/NotFound";
 import VaultItemCreate from "./pages/VaultItemCreate";
 import { Toaster } from "./components/ui/toaster";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -85,7 +86,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
+            {/* <Route
               path="/contact"
               element={
                 <ProtectedRoute>
@@ -94,7 +95,7 @@ const App = () => (
                   </Layout>
                 </ProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="/upload"
               element={
@@ -176,16 +177,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/emergency-contacts"
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <EmergencyContacts />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
+
             <Route
               path="/upload"
               element={
@@ -226,7 +218,16 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Settings />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

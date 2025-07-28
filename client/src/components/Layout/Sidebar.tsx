@@ -30,11 +30,11 @@ const navigation: NavItem[] = [
     href: '/vault',
     icon: Shield,
   },
-  {
-    name: 'Emergency Contacts',
-    href: '/emergency-contacts',
-    icon: Users,
-  },
+  // {
+  //   name: 'Emergency Contacts',
+  //   href: '/emergency-contacts',
+  //   icon: Users,
+  // },
   {
     name: 'File Upload',
     href: '/upload',

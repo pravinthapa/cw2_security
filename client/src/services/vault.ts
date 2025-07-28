@@ -29,17 +29,17 @@ export interface CreateVaultItemData {
 
 class VaultService {
   async getVaultItems(): Promise<VaultItem[]> {
-    const response = await api.get("/api/vault");
+    const response = await api.get("/vault");
     return response.data;
   }
 
   async getVaultItem(id: string): Promise<VaultItem> {
-    const response = await api.get(`/api/vault/${id}`);
+    const response = await api.get(`/vault/${id}`);
     return response.data;
   }
 
   async createVaultItem(data: CreateVaultItemData): Promise<VaultItem> {
-    const response = await api.post("/api/vault", data);
+    const response = await api.post("/vault", data);
     return response.data;
   }
 
@@ -47,22 +47,22 @@ class VaultService {
     id: string,
     data: Partial<CreateVaultItemData>
   ): Promise<VaultItem> {
-    const response = await api.put(`/api/vault/${id}`, data);
+    const response = await api.put(`/vault/${id}`, data);
     return response.data;
   }
 
   async deleteVaultItem(id: string): Promise<void> {
-    await api.delete(`/api/vault/${id}`);
+    await api.delete(`/vault/${id}`);
   }
 
   async toggleFavorite(id: string): Promise<VaultItem> {
-    const response = await api.patch(`/api/vault/${id}/favorite`);
+    const response = await api.patch(`/vault/${id}/favorite`);
     return response.data;
   }
 
   async searchVaultItems(query: string): Promise<VaultItem[]> {
     const response = await api.get(
-      `/api/vault/search?q=${encodeURIComponent(query)}`
+      `/vault/search?q=${encodeURIComponent(query)}`
     );
     return response.data;
   }
@@ -76,7 +76,7 @@ class VaultService {
       timestamp: string;
     }>;
   }> {
-    const response = await api.get("/api/vault/analytics");
+    const response = await api.get("/vault/analytics");
     return response.data;
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Upload,
   File,
@@ -7,6 +7,8 @@ import {
   AlertCircle,
   Download,
   Shield,
+  View,
+  Eye,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -17,15 +19,21 @@ import {
 } from "../components/ui/card";
 import { Progress } from "../components/ui/progress";
 import api from "../services/api";
+import { toast } from "sonner";
 
 interface UploadedFile {
   id: string;
-  name: string;
-  size: number;
+  originalName: string;
   type: string;
   uploadedAt: string;
   encrypted: boolean;
   url: string;
+  createdAt: string;
+  format: string;
+  public_id: string;
+  size: 167031;
+  updatedAt: string;
+  _id: string;
 }
 
 interface FileUploadProgress {
@@ -37,11 +45,10 @@ interface FileUploadProgress {
 
 const FileUpload: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [currentUploads, setCurrentUploads] = useState<FileUploadProgress[]>(
-    []
-  );
-  const [isDragOver, setIsDragOver] = useState(false);
+  const [currentUploads, setCurrentUploads] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const [openDelete, setOpenDelete] = useState<string>("");
 
   React.useEffect(() => {
     loadUploadedFiles();
@@ -49,111 +56,44 @@ const FileUpload: React.FC = () => {
 
   const loadUploadedFiles = async () => {
     try {
-      const response = await api.get("/api/upload");
-      setUploadedFiles(response.data);
+      const response = await api.get("/upload");
+      setUploadedFiles(response?.data?.files);
     } catch (error) {
       console.error("Failed to load files:", error);
     } finally {
+      isUploading;
       setIsLoading(false);
     }
   };
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-
-    const files = Array.from(e.dataTransfer.files);
-    handleFileUpload(files);
-  }, []);
-
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files);
+
     handleFileUpload(files);
   };
 
   const handleFileUpload = async (files: File[]) => {
-    const newUploads: FileUploadProgress[] = files.map((file) => ({
-      file,
-      progress: 0,
-      status: "uploading" as const,
-    }));
-
-    setCurrentUploads((prev) => [...prev, ...newUploads]);
-
-    for (const upload of newUploads) {
-      try {
-        const formData = new FormData();
-        formData.append("file", upload.file);
-
-        const response = await api.post("/api/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round(
-              (progressEvent.loaded * 100) / (progressEvent.total || 1)
-            );
-
-            setCurrentUploads((prev) =>
-              prev.map((u) => (u.file === upload.file ? { ...u, progress } : u))
-            );
-          },
-        });
-
-        // Mark as successful
-        setCurrentUploads((prev) =>
-          prev.map((u) =>
-            u.file === upload.file
-              ? { ...u, status: "success" as const, progress: 100 }
-              : u
-          )
-        );
-
-        // Add to uploaded files list
-        setUploadedFiles((prev) => [response.data, ...prev]);
-
-        // Remove from current uploads after delay
-        setTimeout(() => {
-          setCurrentUploads((prev) =>
-            prev.filter((u) => u.file !== upload.file)
-          );
-        }, 2000);
-      } catch (error: any) {
-        setCurrentUploads((prev) =>
-          prev.map((u) =>
-            u.file === upload.file
-              ? {
-                  ...u,
-                  status: "error" as const,
-                  error: error.response?.data?.message || "Upload failed",
-                }
-              : u
-          )
-        );
-      }
-    }
-  };
-
-  const handleDeleteFile = async (fileId: string) => {
-    if (!confirm("Are you sure you want to delete this file?")) {
-      return;
-    }
-
+    setIsUploading(true);
     try {
-      await api.delete(`/files/${fileId}`);
-      setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
-    } catch (error) {
-      console.error("Failed to delete file:", error);
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      const response = await api.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response)
+        setCurrentUploads((prevUploads) => [
+          ...prevUploads,
+          response?.data?.file,
+        ]);
+      toast.info("File Uploaded successfully.");
+
+      loadUploadedFiles();
+    } catch {
+      console.error("Upload failed.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -165,16 +105,26 @@ const FileUpload: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const getFileIcon = (type: string) => {
-    if (type.startsWith("image/")) return "🖼️";
-    if (type.startsWith("video/")) return "🎥";
-    if (type.startsWith("audio/")) return "🎵";
-    if (type.includes("pdf")) return "📄";
-    if (type.includes("document") || type.includes("word")) return "📝";
-    if (type.includes("spreadsheet") || type.includes("excel")) return "📊";
-    return "📁";
+  const handleDeleteFile = async (id: string) => {
+    try {
+      const response = await api.delete(`/upload/?id=${id}/`);
+      if (response) {
+        toast.info("File deleted successfully.");
+      }
+    } catch {
+      console.error("Failed to delete file");
+    }
   };
 
+  const getFileIcon = (type: string) => {
+    if (type?.startsWith("image/")) return "🖼️";
+    if (type?.startsWith("video/")) return "🎥";
+    if (type?.startsWith("audio/")) return "🎵";
+    if (type?.includes("pdf")) return "📄";
+    if (type?.includes("document") || type?.includes("word")) return "📝";
+    if (type?.includes("spreadsheet") || type?.includes("excel")) return "📊";
+    return "📁";
+  };
   if (isLoading) {
     return (
       <div className="space-y-6 animate-fade-in">
@@ -193,7 +143,6 @@ const FileUpload: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -228,20 +177,10 @@ const FileUpload: React.FC = () => {
       <Card className="card-security">
         <CardContent className="p-8">
           <div
-            className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors ${
-              isDragOver
-                ? "border-accent bg-accent-light/20"
-                : "border-muted-foreground/25 hover:border-accent/50"
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors border-accent bg-accent-light/20 `}
           >
             <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Upload Files</h3>
-            {/* <p className="text-muted-foreground mb-6">
-              Drag and drop files here, or click to browse
-            </p> */}
 
             <input
               type="file"
@@ -254,9 +193,8 @@ const FileUpload: React.FC = () => {
               htmlFor="file-input"
               className="bg-blue-900 text-white p-2  rounded-sm hover:bg-opacity-80 duration-100"
             >
-              Select Files
+              {isUploading ? "Uploading..." : "Select Files"}
             </label>
-
             <p className="text-xs text-muted-foreground mt-4">
               Maximum file size: 10MB. Supported formats: All file types
             </p>
@@ -265,25 +203,23 @@ const FileUpload: React.FC = () => {
       </Card>
 
       {/* Current Uploads */}
-      {currentUploads.length > 0 && (
+      {currentUploads?.length > 0 && (
         <Card className="card-security">
           <CardHeader>
             <CardTitle>Uploading Files</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {currentUploads.map((upload, index) => (
+            {currentUploads?.map((upload, index) => (
               <div key={index} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="text-2xl">
-                      {getFileIcon(upload.file.type)}
-                    </div>
+                    <div className="text-2xl">{getFileIcon(upload?.type)}</div>
                     <div>
                       <p className="font-medium truncate max-w-sm">
-                        {upload.file.name}
+                        {upload?.originalName}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {formatFileSize(upload.file.size)}
+                        {formatFileSize(upload?.size)}
                       </p>
                     </div>
                   </div>
@@ -322,29 +258,31 @@ const FileUpload: React.FC = () => {
           <CardTitle>Your Files</CardTitle>
         </CardHeader>
         <CardContent>
-          {uploadedFiles.length === 0 ? (
+          {uploadedFiles?.length === 0 ? (
             <div className="text-center py-8">
               <File className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">No files uploaded yet</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {uploadedFiles.map((file) => (
+              {uploadedFiles?.map((file) => (
                 <div
-                  key={file.id}
+                  key={file?.id}
                   className="flex items-center justify-between p-4 rounded-xl border border-border hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="text-2xl">{getFileIcon(file.type)}</div>
+                    <div className="text-2xl">{getFileIcon(file?.type)}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{file.name}</p>
+                      <p className="font-medium truncate">
+                        {file?.originalName}
+                      </p>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{formatFileSize(file.size)}</span>
+                        <span>{formatFileSize(file?.size)}</span>
                         <span>•</span>
                         <span>
-                          {new Date(file.uploadedAt).toLocaleDateString()}
+                          {new Date(file?.uploadedAt).toLocaleDateString()}
                         </span>
-                        {file.encrypted && (
+                        {file?.encrypted && (
                           <>
                             <span>•</span>
                             <div className="flex items-center gap-1">
@@ -361,14 +299,14 @@ const FileUpload: React.FC = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(file.url, "_blank")}
+                      onClick={() => window.open(file?.url, "_blank")}
                     >
-                      <Download className="h-4 w-4" />
+                      <Eye className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteFile(file.id)}
+                      onClick={() => handleDeleteFile(file?.public_id)}
                       className="text-destructive hover:text-destructive"
                     >
                       <X className="h-4 w-4" />

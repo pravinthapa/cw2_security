@@ -1,16 +1,16 @@
-import express from "express";
-
+import { Router } from "express";
 import {
   addContact,
-  getContacts,
   deleteContact,
+  getContacts,
 } from "../controllers/contactController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
-const router = express.Router();
-router.use(protect);
+const router = Router();
 
-router.route("/").post(addContact).get(getContacts);
-router.route("/:id").delete(deleteContact);
+router.post("/", protect, addContact);
+router.get("/", protect, getContacts);
+router.delete("/:id", protect, deleteContact);
 
 export default router;
+ 

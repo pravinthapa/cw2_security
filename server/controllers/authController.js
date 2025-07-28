@@ -66,7 +66,6 @@ export const verifyOtp = async (req, res, next) => {
   }
 };
 
-// ── POST /api/auth/login
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -76,7 +75,6 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid credentials" });
 
     if (user.mfaEnabled) {
-      // generate 6‑digit numeric OTP
       const code = cryptoRandomString({ length: 6, type: "numeric" });
       user.otpHash = hashOTP(code);
       user.otpExpires = Date.now() + 5 * 60 * 1000;
@@ -95,7 +93,6 @@ export const login = async (req, res, next) => {
   }
 };
 export const logout = (req, res) => {
-  // Simply clear cookie if you set token in a cookie
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,

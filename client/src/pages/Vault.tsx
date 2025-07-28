@@ -54,7 +54,7 @@ const Vault: React.FC = () => {
 
   const loadVaultItems = async () => {
     try {
-      const items = await api.get("/api/vault");
+      const items = await api.get("/vault");
       if (items) setVaultItems(items?.data);
     } catch (error) {
       console.error("Failed to load vault items:", error);

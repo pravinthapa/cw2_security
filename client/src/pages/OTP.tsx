@@ -36,7 +36,7 @@ const Login: React.FC = () => {
 
     try {
       const { data } = await axios.post(
-        import.meta.env.VITE_BACKEND_BASE_URL + "/api/auth/verify-otp",
+        import.meta.env.VITE_BACKEND_BASE_URL + "/auth/verify-otp",
         formData,
         {
           headers: { "Content-Type": "application/json" },

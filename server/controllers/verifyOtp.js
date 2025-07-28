@@ -1,3 +1,5 @@
+import User from "../models/User";
+
 export const verifyOtp = async (req, res, next) => {
   try {
     const { userId, code } = req.body;

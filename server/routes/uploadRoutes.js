@@ -1,10 +1,17 @@
-import { Router } from "express";
+import express from "express";
+import multer from "multer";
+import {
+  uploadFile,
+  getFiles,
+  deleteFile,
+} from "../controllers/uploadController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 import { upload } from "../middlewares/uploadMiddleware.js";
-import { uploadFile } from "../controllers/uploadController.js";
 
-const router = Router();
+const router = express.Router();
 
-router.post("/", protect(), upload.single("file"), uploadFile);
+router.post("/", upload.single("file"), uploadFile);
+router.get("/", getFiles);
+router.delete("/:id/", deleteFile);
 
 export default router;

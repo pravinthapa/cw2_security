@@ -60,7 +60,7 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    try {
+    try {api
       await api.post("/auth/logout");
     } catch (error) {
     } finally {
